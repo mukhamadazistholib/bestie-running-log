@@ -85,12 +85,12 @@
   function initProfile() {
     const h = new Date().getHours();
     $("greeting").textContent = $("someElementId") // Updated to use a specific element ID
-      ? "Pagi ☀️"
+      ? "Morning ☀️"
       : h < 15
-        ? "Siang 🌤️"
+        ? "Afternoon 🌤️"
         : h < 18
-          ? "Sore 🌷"
-          : "Malam 🌙";
+          ? "Evening 🌷"
+          : "Night 🌙";
     $("progressRunner").src = S.uri("mini", 4);
     $("fabHeart").src = S.uri("heart", 2);
     $("favicon").href = S.uri("heart", 3);
