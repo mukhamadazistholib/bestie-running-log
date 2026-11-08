@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Manage Events — Run Log ♡</title>
+    <link rel="icon" id="favicon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          document.documentElement.setAttribute(
+            "data-theme",
+            localStorage.getItem("theme") || "light",
+          );
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="stylesheet" href="../style/style.css" />
+    <link rel="stylesheet" href="../style/admin/admin.css" />
+  </head>
+  <body>
+    <div class="decor" id="decor" aria-hidden="true"></div>
+
+    <!-- LOGIN -->
+    <div class="phone-shell" id="loginView">
+      <div class="window">
+        <div class="titlebar">
+          <span>🔒 admin_login.exe</span
+          ><span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="window-body">
+          <div class="profile">
+            <div class="avatar"><img id="loginAvatar" alt="" /></div>
+            <div>
+              <p class="greeting">Private area</p>
+              <h1 class="profile-name">Manage Events</h1>
+            </div>
+          </div>
+          <p class="bio">Sign in to manage your running events ♡</p>
+          <form id="loginForm">
+            <label class="field-label" for="pwInput">Admin password</label>
+            <input
+              type="password"
+              id="pwInput"
+              class="field"
+              placeholder="••••••••"
+              required
+              autofocus
+            />
+            <button type="submit" class="px-btn" id="loginBtn">
+              Sign In ♡
+            </button>
+            <p class="form-status" id="loginStatus"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="phone-shell" id="dashView" hidden>
+      <div class="window">
+        <div class="titlebar">
+          <span>♡ admin.exe</span
+          ><span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="window-body">
+          <div class="header-top">
+            <div>
+              <p class="greeting">Manage</p>
+              <h1 class="profile-name">Running Events</h1>
+            </div>
+            <button class="icon-btn" id="logoutBtn" title="Sign out">⏻</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="window">
+        <div class="titlebar">
+          <span>★ event_list.exe</span
+          ><span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="window-body">
+          <div class="panel-heading">
+            <span class="panel-title">EVENT LIST</span>
+            <button class="icon-btn" id="reloadBtn" title="Reload">⟳</button>
+          </div>
+          <button class="px-btn add-btn" id="openAddBtn">+ Add Event</button>
+          <div class="list-state" id="adminListState">Loading.. ♡</div>
+          <ul class="todo-list admin-list" id="adminList" hidden></ul>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="theme-toggle"
+      id="themeToggle"
+      aria-label="Change theme"
+      title="Change theme"
+    >
+      🌙
+    </button>
+
+    <!-- ADD / EDIT -->
+    <div class="modal-overlay" id="eventModal">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span id="eventModalTitle">New event</span
+          ><button class="x-btn" id="eventModalClose" aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">Enter your event details ✨</p>
+          <form id="eventForm">
+            <input type="hidden" id="eventId" />
+            <label class="field-label" for="iconInput">Icon (emoji)</label>
+            <input
+              type="text"
+              id="iconInput"
+              class="field"
+              placeholder="🏃‍♀️"
+              maxlength="8"
+              required
+            />
+            <label class="field-label" for="colorInput">Icon color</label>
+            <input
+              type="color"
+              id="colorInput"
+              class="field color-input"
+              value="#ffc2dd"
+            />
+            <label class="field-label" for="titleInput">Title</label>
+            <input
+              type="text"
+              id="titleInput"
+              class="field"
+              placeholder="Pink Run Jakarta"
+              maxlength="120"
+              required
+            />
+            <label class="field-label" for="descInput">Short description</label>
+            <input
+              type="text"
+              id="descInput"
+              class="field"
+              placeholder="Do not forget your pink ribbon!"
+              maxlength="240"
+            />
+            <label class="field-label" for="timeInput">Date and time</label>
+            <input
+              type="text"
+              id="timeInput"
+              class="field"
+              placeholder="2026-12-27 06:30"
+              maxlength="40"
+            />
+            <label class="field-label" for="statusInput">Status</label>
+            <select id="statusInput" class="field">
+              <option value="pending">Pending</option>
+              <option value="active">In progress</option>
+              <option value="done">Completed</option>
+              <option value="canceled">Canceled</option>
+            </select>
+            <button type="submit" class="px-btn" id="eventSubmitBtn">
+              Save Event
+            </button>
+            <p class="form-status" id="eventFormStatus"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE -->
+    <div class="modal-overlay" id="deleteModal">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>🗑️ delete.exe</span
+          ><button class="x-btn" id="deleteModalClose" aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div class="window-body">
+          <h2 class="del-title">Delete event?</h2>
+          <p class="modal-sub" id="deleteModalText"></p>
+          <div class="delete-actions">
+            <button type="button" class="ghost-btn" id="deleteCancelBtn">
+              Cancel
+            </button>
+            <button type="button" class="danger-btn" id="deleteConfirmBtn">
+              Delete
+            </button>
+          </div>
+          <p class="form-status" id="deleteFormStatus"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/sprites.js"></script>
+    <script src="../js/admin/admin.js"></script>
+  </body>
+</html>

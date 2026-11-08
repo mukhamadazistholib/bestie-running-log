@@ -1,0 +1,60 @@
+.add-btn {
+  margin: 0 0 20px;
+}
+.admin-list {
+  padding: 0 6px;
+}
+.admin-item-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+.admin-item-actions .icon-btn {
+  margin: 0;
+}
+.icon-btn.danger:hover {
+  background: #ffc2cf;
+}
+.color-input {
+  height: 46px;
+  padding: 4px;
+  cursor: pointer;
+}
+select.field {
+  appearance: none;
+  cursor: pointer;
+}
+.del-title {
+  margin: 0 0 12px;
+  font: 12px var(--f-head);
+  color: var(--hot);
+}
+.delete-actions {
+  display: flex;
+  gap: 16px;
+  margin: 18px 6px 6px;
+}
+.ghost-btn,
+.danger-btn {
+  flex: 1;
+  padding: 12px;
+  border: 0;
+  font: 9px var(--f-head);
+  box-shadow: var(--pixel-border);
+}
+.ghost-btn {
+  background: var(--card2);
+}
+.danger-btn {
+  background: #e0457f;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--ink);
+}
+.ghost-btn:active,
+.danger-btn:active {
+  transform: translateY(4px);
+}
+.ghost-btn:disabled,
+.danger-btn:disabled {
+  opacity: 0.6;
+}

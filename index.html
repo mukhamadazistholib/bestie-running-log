@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>♡ Run Log — Pink Running Journey ♡</title>
+    <link rel="icon" id="favicon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style/style.css" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("theme") || "light";
+          document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="decor" id="decor" aria-hidden="true"></div>
+    <div class="bubble-lane" id="bubbleLane" aria-hidden="true"></div>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+    <div class="phone-shell">
+      <header class="window">
+        <div class="titlebar">
+          <span>♡ run_log.exe</span
+          ><span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="window-body">
+          <div class="header-top">
+            <div class="profile">
+              <div class="avatar">
+                <img id="profilePhoto" alt="Profile photo" />
+              </div>
+              <div>
+                <p class="greeting" id="greeting">Hello</p>
+                <h1 class="profile-name" id="profileName">Bestie</h1>
+              </div>
+            </div>
+            <div class="bib">
+              <span class="bib-label">TODAY</span><span id="todayDate">—</span>
+            </div>
+          </div>
+          <p class="bio" id="profileBio"></p>
+
+          <div class="progress-row">
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill"></div>
+              <img class="progress-runner" id="progressRunner" alt="" />
+            </div>
+            <span class="progress-label" id="progressLabel"
+              >0 / 0 Completed</span
+            >
+          </div>
+          <div class="countdown" id="countdownBadge" hidden></div>
+        </div>
+      </header>
+
+      <main class="window">
+        <div class="titlebar">
+          <span>★ event_list.exe</span
+          ><span class="dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="window-body">
+          <div class="panel-heading">
+            <span class="panel-title">MY RUNNING LIST</span>
+            <div>
+              <button class="icon-btn" id="statsBtn" title="Statistics">
+                📊
+              </button>
+              <button class="icon-btn" id="refreshBtn" title="Refresh">
+                ⟳
+              </button>
+            </div>
+          </div>
+          <div class="list-state" id="listState">Loading.. ♡</div>
+          <ul class="todo-list" id="todoList" hidden></ul>
+        </div>
+      </main>
+    </div>
+
+    <button class="fab" id="fabBtn">
+      <img id="fabHeart" alt="" /><span>Send Encouragement!</span>
+    </button>
+    <button
+      class="theme-toggle"
+      id="themeToggle"
+      aria-label="Change theme"
+      title="Change theme"
+    >
+      🌙
+    </button>
+
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>♡ encouragement.exe</span
+          ><button class="x-btn" id="modalClose" aria-label="Close">✕</button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">
+            A kind word can make every step feel lighter ✨
+          </p>
+          <form id="encouragementForm">
+            <label class="field-label" for="nameInput"
+              >Your name (optional)</label
+            >
+            <input
+              type="text"
+              id="nameInput"
+              class="field"
+              placeholder="@anonim"
+              maxlength="40"
+            />
+            <label class="field-label" for="msgInput"
+              >Encouragement message</label
+            >
+            <textarea
+              id="msgInput"
+              class="field"
+              placeholder="You can do it! Take it one step at a time 💗"
+              maxlength="200"
+              required
+            ></textarea>
+            <div class="char-counter"><span id="charCount">0</span>/200</div>
+            <button type="submit" class="px-btn" id="submitBtn">
+              Send Encouragement ♡
+            </button>
+            <p class="form-status" id="formStatus"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="statsOverlay">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>📊 statistics.exe</span
+          ><button class="x-btn" id="statsClose" aria-label="Close">✕</button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">Your running journey so far ✨</p>
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="badges-row" id="badgesRow"></div>
+          <button type="button" class="px-btn" id="shareBtn">
+            Share Progress 📤
+          </button>
+          <p class="form-status" id="shareStatus"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="nextEventOverlay">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>🏁 next_run.exe</span
+          ><button class="x-btn" id="nextEventClose" aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">Your next run ✨</p>
+          <div class="next-event-card" id="nextEventCard"></div>
+          <button type="button" class="px-btn" id="nextEventShareBtn">
+            Share Image 📤
+          </button>
+          <p class="form-status" id="nextEventShareStatus"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/sprites.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>
