@@ -478,6 +478,44 @@ button {
   box-shadow: var(--pixel-border);
   font-size: 20px;
 }
+.vinyl-toggle {
+  position: fixed;
+  z-index: 20;
+  left: 16px;
+  bottom: 26px;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  box-shadow: var(--pixel-border);
+}
+.vinyl-toggle img {
+  width: 32px;
+  animation: spin 2.4s steps(16) infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.vinyl-toggle:active {
+  transform: translateY(3px);
+}
+.player-frame {
+  margin: 6px 4px 4px;
+  box-shadow: var(--pixel-border);
+  background: var(--card2);
+  min-height: 60px;
+}
+.player-frame iframe {
+  display: block;
+  width: 100%;
+  height: 352px;
+  border: 0;
+}
 .px-btn {
   width: 100%;
   margin-top: 10px;

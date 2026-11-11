@@ -28,7 +28,8 @@
   let lastEvents = [],
     queue = [],
     bubbleTimer = null,
-    nextEvent = null;
+    nextEvent = null,
+    loadedSrc = "";
 
   /* ---------- theme ---------- */
   function initTheme() {
@@ -59,11 +60,61 @@
     if (c.bio) CONFIG.PROFILE.bio = String(c.bio);
     if (typeof c.photo === "string") CONFIG.PROFILE.photo = c.photo;
     if (Array.isArray(c.ticker) && c.ticker.length) CONFIG.TICKER = c.ticker;
+    if (typeof c.spotify_embed === "string") CONFIG.SPOTIFY = c.spotify_embed;
     if (Number(c.bubble_interval_ms) > 0)
       CONFIG.BUBBLE_INTERVAL_MS = Number(c.bubble_interval_ms);
     if (Number(c.bubble_duration_s) > 0)
       CONFIG.BUBBLE_DURATION_S = Number(c.bubble_duration_s);
     renderProfile();
+  }
+
+  function spotifySrc(raw) {
+    if (!raw) return "";
+    raw = String(raw).trim();
+    const m = raw.match(/src\s*=\s*["']([^"']+)["']/i);
+    try {
+      const u = new URL((m ? m[1] : raw).replace(/&amp;/g, "&"));
+      if (u.protocol !== "https:" || u.hostname !== "open.spotify.com")
+        return "";
+      let path = u.pathname;
+      if (!path.startsWith("/embed/"))
+        path = path.replace(/^\/(?:intl-[a-z-]+\/)?/, "/embed/");
+      return /^\/embed\/(playlist|album|track|artist|show|episode)\/[A-Za-z0-9]+/.test(
+        path,
+      )
+        ? "https://open.spotify.com" + path + u.search
+        : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function renderPlayer() {
+    const src = spotifySrc(CONFIG.SPOTIFY);
+    $("vinylBtn").hidden = !src;
+    if (loadedSrc && loadedSrc !== src) {
+      $("playerFrame").innerHTML = "";
+      loadedSrc = "";
+    }
+  }
+
+  function openPlayer() {
+    const src = spotifySrc(CONFIG.SPOTIFY);
+    if (!src) return;
+    if (loadedSrc !== src) {
+      const f = document.createElement("iframe");
+      f.src = src;
+      f.width = "100%";
+      f.height = "352";
+      f.loading = "lazy";
+      f.title = "Playlist Spotify";
+      f.allow =
+        "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+      $("playerFrame").innerHTML = "";
+      $("playerFrame").appendChild(f);
+      loadedSrc = src;
+    }
+    toggle("playerOverlay", true);
   }
 
   function renderProfile() {
@@ -78,21 +129,24 @@
       img.className = "";
     }
     const txt = CONFIG.TICKER.map((t) => "★ " + t + " ").join("") + "♡ ";
+    renderPlayer();
     $("tickerTrack").innerHTML =
       `<span>${esc(txt.repeat(3))}</span><span>${esc(txt.repeat(3))}</span>`;
   }
 
   function initProfile() {
     const h = new Date().getHours();
-    $("greeting").textContent = $("someElementId") // Updated to use a specific element ID
-      ? "Morning ☀️"
-      : h < 15
-        ? "Afternoon 🌤️"
-        : h < 18
-          ? "Evening 🌷"
-          : "Night 🌙";
+    $("greeting").textContent =
+      h < 11
+        ? "Good morning ☀️"
+        : h < 15
+          ? "Hello 🌤️"
+          : h < 18
+            ? "Good afternoon 🌷"
+            : "Good evening 🌙";
     $("progressRunner").src = S.uri("mini", 4);
     $("fabHeart").src = S.uri("heart", 2);
+    $("vinylImg").src = S.uri("vinyl", 4);
     $("favicon").href = S.uri("heart", 3);
     // Show the last saved config first to avoid a default-state flash.
     try {
@@ -103,7 +157,7 @@
     const tick = () => {
       const n = new Date();
       $("todayDate").textContent =
-        n.toLocaleDateString("id-ID", {
+        n.toLocaleDateString("en-US", {
           weekday: "short",
           day: "2-digit",
           month: "short",
@@ -217,7 +271,7 @@
     const d = new Date(v);
     return isNaN(d)
       ? v || ""
-      : new Intl.DateTimeFormat("id-ID", {
+      : new Intl.DateTimeFormat("en-US", {
           weekday: "long",
           day: "numeric",
           month: "long",
@@ -550,7 +604,8 @@
       Notification.requestPermission().then((p) => {
         if (p === "granted") arm();
       });
-    else alert("Notifikasi diblokir. Aktifkan dulu di pengaturan browser ya.");
+    else
+      alert("Notifications are blocked. Enable them in your browser settings.");
   }
   $("todoList").addEventListener("click", (e) => {
     const b = e.target.closest(".todo-bell");
@@ -710,7 +765,7 @@
       st = $("shareStatus"),
       label = btn.textContent;
     btn.disabled = true;
-    btn.textContent = "Menyiapkan gambar..";
+    btn.textContent = "Preparing image..";
     st.className = "form-status";
     st.textContent = "";
     try {
@@ -730,7 +785,7 @@
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-        st.textContent = "Gambar terunduh, share dari galeri ya ♡";
+        st.textContent = "Image downloaded—share it from your gallery ♡";
         st.classList.add("ok");
       }
     } catch (err) {
@@ -809,6 +864,13 @@
     () => ($("charCount").textContent = $("msgInput").value.length),
   );
   $("refreshBtn").addEventListener("click", loadAll);
+  $("vinylBtn").addEventListener("click", openPlayer);
+  $("playerClose").addEventListener("click", () =>
+    toggle("playerOverlay", false),
+  );
+  $("playerOverlay").addEventListener("click", (e) => {
+    if (e.target === $("playerOverlay")) toggle("playerOverlay", false);
+  });
 
   $("encouragementForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -818,7 +880,7 @@
     const btn = $("submitBtn"),
       st = $("formStatus");
     btn.disabled = true;
-    btn.textContent = "Mengirim..";
+    btn.textContent = "Sending..";
     st.className = "form-status";
     st.textContent = "";
     try {

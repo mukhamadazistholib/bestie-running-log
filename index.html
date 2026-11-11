@@ -92,6 +92,15 @@
       <img id="fabHeart" alt="" /><span>Send Encouragement!</span>
     </button>
     <button
+      class="vinyl-toggle"
+      id="vinylBtn"
+      aria-label="Open music playlist"
+      title="Music playlist"
+      hidden
+    >
+      <img id="vinylImg" alt="" />
+    </button>
+    <button
       class="theme-toggle"
       id="themeToggle"
       aria-label="Change theme"
@@ -155,6 +164,22 @@
             Share Progress 📤
           </button>
           <p class="form-status" id="shareStatus"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="playerOverlay">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>♪ playlist.exe</span
+          ><button class="x-btn" id="playerClose" aria-label="Close">✕</button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">
+            Your running playlist ♪ Music keeps playing when you close this
+            window.
+          </p>
+          <div class="player-frame" id="playerFrame"></div>
         </div>
       </div>
     </div>

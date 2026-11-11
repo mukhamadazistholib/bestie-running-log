@@ -1,6 +1,6 @@
 const CONFIG = {
   ENDPOINT_URL:
-    "https://script.google.com/macros/s/AKfycby-u5fe-vov4ssRIhrek-Ez8NGMqecjoB0Qwhto-b6B4M1kUJUuJqLZyZxJW9FivH0VMQ/exec",
+    "https://script.google.com/macros/s/AKfycbz-0G84z4YsZUQL_SV9E66qfQG2oOcJBGLuGUebAdsRiR0eXVtHkv3i8TzQ81cKDT1vag/exec",
   PROFILE: {
     name: "Bestie",
     bio: "Take it one step at a time and keep smiling 🌸",
@@ -13,6 +13,7 @@ const CONFIG = {
     "STAY HYDRATED",
     "PROUD OF YOU",
   ],
+  SPOTIFY: "", // kode embed iframe / link playlist Spotify. Kosong = tombol piringan hitam disembunyikan
   BUBBLE_INTERVAL_MS: 3500,
   BUBBLE_DURATION_S: 12,
 };
@@ -45,7 +46,7 @@ const MOCK_DATA = {
       id: 3,
       icon: "🎀",
       title: "Pink Run Jakarta",
-      description: "Do not forget your ribbon and pink shirt!",
+      description: "Don't forget your ribbon and pink shirt!",
       time: _d(4),
       status: "pending",
     },
@@ -67,8 +68,8 @@ const MOCK_DATA = {
     },
   ],
   semangat: [
-    { name: "Dinda", message: "Keep going bestie, you are amazing! 💗" },
-    { name: "Anonymous", message: "Almost at the finish line, go go go!! ✨" },
-    { name: "Bagas", message: "A new personal record is within reach 💪" },
+    { name: "Dinda", message: "Keep going, bestie—you've got this! 💗" },
+    { name: "Anonymous", message: "Almost at the finish line—keep going!! ✨" },
+    { name: "Bagas", message: "You're going to crush that new PR 💪" },
   ],
 };

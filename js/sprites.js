@@ -11,6 +11,7 @@
     M: "#e0457f",
     B: "#ff7fb5",
     Y: "#fff06a",
+    D: "#4a3358",
   };
   const SPRITES = {
     heart: [
@@ -26,6 +27,21 @@
       "......K......",
     ],
     mini: [".RR.RR.", "RRRRRRR", "RRRRRRR", ".RRRRR.", "..RRR..", "...R..."],
+    vinyl: [
+      "....KKKKK....",
+      "..KKDDDDDKK..",
+      ".KDDDDDDDDDK.",
+      ".KDDWWDDDDDK.",
+      "KDDDDDDDDDDDK",
+      "KDDDDRRRDDDDK",
+      "KDDDDRKRDDDDK",
+      "KDDDDRRRDDDDK",
+      "KDDDDDDDDDWDK",
+      ".KDDDDDDDDDK.",
+      ".KDDDDDDDDDK.",
+      "..KKDDDDDKK..",
+      "....KKKKK....",
+    ],
     star: ["..Y..", "..Y..", "YYWYY", "..Y..", "..Y.."],
     cloud: [
       "......WWWW......",

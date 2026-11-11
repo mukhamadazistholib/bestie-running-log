@@ -31,7 +31,7 @@
     const d = new Date(v);
     return isNaN(d)
       ? v || ""
-      : new Intl.DateTimeFormat("id-ID", {
+      : new Intl.DateTimeFormat("en-US", {
           weekday: "long",
           day: "numeric",
           month: "long",
