@@ -29,7 +29,8 @@
     queue = [],
     bubbleTimer = null,
     nextEvent = null,
-    loadedSrc = "";
+    loadedSrc = "",
+    stravaLoaded = "";
 
   /* ---------- theme ---------- */
   function initTheme() {
@@ -61,6 +62,7 @@
     if (typeof c.photo === "string") CONFIG.PROFILE.photo = c.photo;
     if (Array.isArray(c.ticker) && c.ticker.length) CONFIG.TICKER = c.ticker;
     if (typeof c.spotify_embed === "string") CONFIG.SPOTIFY = c.spotify_embed;
+    if (typeof c.strava_embed === "string") CONFIG.STRAVA = c.strava_embed;
     if (Number(c.bubble_interval_ms) > 0)
       CONFIG.BUBBLE_INTERVAL_MS = Number(c.bubble_interval_ms);
     if (Number(c.bubble_duration_s) > 0)
@@ -68,6 +70,7 @@
     renderProfile();
   }
 
+  // Accept a complete <iframe> code or a regular Spotify link; only open.spotify.com is used.
   function spotifySrc(raw) {
     if (!raw) return "";
     raw = String(raw).trim();
@@ -89,13 +92,68 @@
     }
   }
 
+  // Accept Strava <iframe> code; only widgets from www.strava.com are used.
+  function stravaInfo(raw) {
+    if (!raw) return null;
+    raw = String(raw).trim();
+    const m = raw.match(/src\s*=\s*["']([^"']+)["']/i);
+    try {
+      const u = new URL((m ? m[1] : raw).replace(/&amp;/g, "&"));
+      if (u.protocol !== "https:" || u.hostname !== "www.strava.com")
+        return null;
+      if (
+        !/^\/(athletes\/\d+\/(latest-rides|activity-summary)|activities\/\d+\/embed)\/[A-Za-z0-9]+$/.test(
+          u.pathname,
+        )
+      )
+        return null;
+      const hm = raw.match(/height\s*=\s*["']?(\d+)/i),
+        wm = raw.match(/width\s*=\s*["']?(\d+)/i);
+      const clamp = (v, a, b, d) =>
+        v ? Math.min(b, Math.max(a, Number(v))) : d;
+      return {
+        src: u.href,
+        h: clamp(hm && hm[1], 150, 900, 454),
+        w: clamp(wm && wm[1], 150, 600, 300),
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
   function renderPlayer() {
+    const sv = stravaInfo(CONFIG.STRAVA);
+    $("stravaBtn").hidden = !sv;
+    if (stravaLoaded && (!sv || stravaLoaded !== sv.src)) {
+      $("stravaFrame").innerHTML = "";
+      stravaLoaded = "";
+    }
     const src = spotifySrc(CONFIG.SPOTIFY);
     $("vinylBtn").hidden = !src;
     if (loadedSrc && loadedSrc !== src) {
       $("playerFrame").innerHTML = "";
       loadedSrc = "";
     }
+  }
+
+  function openStrava() {
+    const sv = stravaInfo(CONFIG.STRAVA);
+    if (!sv) return;
+    if (stravaLoaded !== sv.src) {
+      const f = document.createElement("iframe");
+      f.src = sv.src;
+      f.width = String(sv.w);
+      f.height = String(sv.h);
+      f.loading = "lazy";
+      f.title = "Strava Activity";
+      f.setAttribute("frameborder", "0");
+      f.setAttribute("scrolling", "no");
+      f.setAttribute("allowtransparency", "true");
+      $("stravaFrame").innerHTML = "";
+      $("stravaFrame").appendChild(f);
+      stravaLoaded = sv.src;
+    }
+    toggle("stravaOverlay", true);
   }
 
   function openPlayer() {
@@ -140,15 +198,15 @@
       h < 11
         ? "Good morning ☀️"
         : h < 15
-          ? "Hello 🌤️"
+          ? "Good afternoon 🌤️"
           : h < 18
-            ? "Good afternoon 🌷"
+            ? "Good evening 🌷"
             : "Good evening 🌙";
     $("progressRunner").src = S.uri("mini", 4);
     $("fabHeart").src = S.uri("heart", 2);
     $("vinylImg").src = S.uri("vinyl", 4);
     $("favicon").href = S.uri("heart", 3);
-    // Show the last saved config first to avoid a default-state flash.
+    // Apply the last saved config first to prevent a flash of the defaults.
     try {
       applyConfig(JSON.parse(localStorage.getItem(CFG_CACHE)));
     } catch (e) {}
@@ -224,7 +282,7 @@
       t = setTimeout(() => ctrl.abort(), 12000);
     try {
       const res = await fetch(CONFIG.ENDPOINT_URL, { signal: ctrl.signal });
-      if (!res.ok) throw new Error("Failed to load data (" + res.status + ")");
+      if (!res.ok) throw new Error("Failed to fetch data (" + res.status + ")");
       return await res.json();
     } finally {
       clearTimeout(t);
@@ -249,7 +307,8 @@
       checkReminders();
       startBubbles(data.semangat || []);
     } catch (err) {
-      $("listState").textContent = "Could not load data. Try refreshing ⟳!";
+      $("listState").textContent =
+        "Oops, failed to load data. Try refreshing ⟳!";
       console.error(err);
     }
   }
@@ -301,7 +360,7 @@
   function renderTodos(events) {
     if (!events.length) {
       $("listState").textContent =
-        "No events yet. Add one through Google Sheets ♡";
+        "No events yet. Add some through Google Sheets ♡";
       return;
     }
     $("listState").hidden = true;
@@ -327,7 +386,7 @@
         return `<li class="${cls}">
         <div class="todo-icon" style="background:${/^#[0-9a-f]{6}$/i.test(ev.color) ? ev.color : PASTELS[i % PASTELS.length]}">${esc(ev.icon || "🎀")}</div>
         <div class="todo-body">
-          <p class="todo-title">${esc(ev.title || "Untitled")}</p>
+          <p class="todo-title">${esc(ev.title || "Untitled event")}</p>
           <p class="todo-desc">${esc(ev.description || "")}</p>
           ${ev.time ? `<p class="todo-time">${esc(fmtDate(ev.time))}</p>` : ""}
         </div>
@@ -525,7 +584,7 @@
       st = $("nextEventShareStatus"),
       label = btn.textContent;
     btn.disabled = true;
-    btn.textContent = "Menyiapkan gambar..";
+    btn.textContent = "Preparing image...";
     st.className = "form-status";
     st.textContent = "";
     try {
@@ -534,8 +593,8 @@
       const { ev, diff } = nextEvent;
       const text =
         diff === 0
-          ? `${ev.title} is today! 🏁`
-          : `${ev.title} is in ${diff} days! 🏃‍♀️`;
+          ? `${ev.title} today! 🏁`
+          : `${ev.title} in ${diff} days! 🏃‍♀️`;
       const file = new File([blob], "next-run.png", { type: "image/png" });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: "Run Log", text });
@@ -548,13 +607,13 @@
         a.click();
         a.remove();
         URL.revokeObjectURL(url);
-        st.textContent = "Image downloaded. Share it from your gallery ♡";
+        st.textContent = "Image downloaded—share it from your gallery ♡";
         st.classList.add("ok");
       }
     } catch (err) {
       if (err && err.name === "AbortError") return;
       console.error(err);
-      st.textContent = "Could not create the image. Try again?";
+      st.textContent = "Failed to create image. Try again?";
       st.classList.add("err");
     } finally {
       btn.disabled = false;
@@ -562,7 +621,7 @@
     }
   });
 
-  /* ---------- reminder H-1 (notifikasi browser) ---------- */
+  /* ---------- one-day browser reminders ---------- */
   const REMINDER_KEY = "runReminders";
   const eventKey = (ev) =>
     ev.id !== undefined && ev.id !== ""
@@ -605,7 +664,9 @@
         if (p === "granted") arm();
       });
     else
-      alert("Notifications are blocked. Enable them in your browser settings.");
+      alert(
+        "Notifications are blocked. Enable them in your browser settings first.",
+      );
   }
   $("todoList").addEventListener("click", (e) => {
     const b = e.target.closest(".todo-bell");
@@ -629,7 +690,7 @@
       if (now >= d.getTime() - 864e5 && now < d.getTime()) {
         try {
           new Notification("Tomorrow: " + (ev.title || "Running event"), {
-            body: ev.description || "Do not forget to get ready! 🏃‍♀️",
+            body: ev.description || "Don't forget to get ready! 🏃‍♀️",
             icon: S.uri("heart", 8),
           });
         } catch (e) {}
@@ -752,7 +813,7 @@
     ctx.font = '600 30px "Pixelify Sans", sans-serif';
     if (unlocked.length)
       wrapText(ctx, unlocked.join("   "), cx, 1100, 780, 40, 2);
-    else ctx.fillText("No badges yet, keep going! ♡", cx, 1100);
+    else ctx.fillText("No badges yet—keep going! ♡", cx, 1100);
 
     ctx.fillStyle = "#8a3b68";
     ctx.font = '20px "Press Start 2P", monospace';
@@ -765,7 +826,7 @@
       st = $("shareStatus"),
       label = btn.textContent;
     btn.disabled = true;
-    btn.textContent = "Preparing image..";
+    btn.textContent = "Preparing image...";
     st.className = "form-status";
     st.textContent = "";
     try {
@@ -791,7 +852,7 @@
     } catch (err) {
       if (err && err.name === "AbortError") return;
       console.error(err);
-      st.textContent = "Could not create the image. Try again?";
+      st.textContent = "Failed to create image. Try again?";
       st.classList.add("err");
     } finally {
       btn.disabled = false;
@@ -836,7 +897,7 @@
     b.style.setProperty("--b", pick(PASTELS));
     b.style.animationDuration =
       (CONFIG.BUBBLE_DURATION_S || 12) + rand(-1.5, 1.5) + "s";
-    b.innerHTML = `<span class="bubble-name">${esc(item.name || "Anonim")}</span><span class="bubble-msg">${esc(item.message || "")}</span>`;
+    b.innerHTML = `<span class="bubble-name">${esc(item.name || "Anonymous")}</span><span class="bubble-msg">${esc(item.message || "")}</span>`;
     $("bubbleLane").appendChild(b);
     b.addEventListener("animationend", () => b.remove());
   }
@@ -865,6 +926,13 @@
   );
   $("refreshBtn").addEventListener("click", loadAll);
   $("vinylBtn").addEventListener("click", openPlayer);
+  $("stravaBtn").addEventListener("click", openStrava);
+  $("stravaClose").addEventListener("click", () =>
+    toggle("stravaOverlay", false),
+  );
+  $("stravaOverlay").addEventListener("click", (e) => {
+    if (e.target === $("stravaOverlay")) toggle("stravaOverlay", false);
+  });
   $("playerClose").addEventListener("click", () =>
     toggle("playerOverlay", false),
   );
@@ -876,11 +944,14 @@
     e.preventDefault();
     const message = $("msgInput").value.trim();
     if (!message) return;
-    const payload = { name: $("nameInput").value.trim() || "Anonim", message };
+    const payload = {
+      name: $("nameInput").value.trim() || "Anonymous",
+      message,
+    };
     const btn = $("submitBtn"),
       st = $("formStatus");
     btn.disabled = true;
-    btn.textContent = "Sending..";
+    btn.textContent = "Sending...";
     st.className = "form-status";
     st.textContent = "";
     try {
@@ -905,7 +976,7 @@
       }, 1200);
     } catch (err) {
       console.error(err);
-      st.textContent = "Could not send it. Try again?";
+      st.textContent = "Oops, failed to send. Please try again.";
       st.classList.add("err");
     } finally {
       btn.disabled = false;

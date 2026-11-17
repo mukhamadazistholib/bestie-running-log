@@ -1,6 +1,6 @@
 const CONFIG = {
   ENDPOINT_URL:
-    "https://script.google.com/macros/s/AKfycbz-0G84z4YsZUQL_SV9E66qfQG2oOcJBGLuGUebAdsRiR0eXVtHkv3i8TzQ81cKDT1vag/exec",
+    "https://script.google.com/macros/s/AKfycbz4ng2xfnNVo-pxVo_ZluP_PeyPwgehYjTEGnHy1b4keWcPt6vOXFFSWiwX0dTP1j17yQ/exec",
   PROFILE: {
     name: "Bestie",
     bio: "Take it one step at a time and keep smiling 🌸",
@@ -13,7 +13,8 @@ const CONFIG = {
     "STAY HYDRATED",
     "PROUD OF YOU",
   ],
-  SPOTIFY: "", // kode embed iframe / link playlist Spotify. Kosong = tombol piringan hitam disembunyikan
+  SPOTIFY: "", // Spotify playlist iframe embed code or link. Empty = hide the vinyl button
+  STRAVA: "", // Strava iframe embed code. Empty = hide the 🏅 button
   BUBBLE_INTERVAL_MS: 3500,
   BUBBLE_DURATION_S: 12,
 };

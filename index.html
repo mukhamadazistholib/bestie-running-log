@@ -74,6 +74,14 @@
           <div class="panel-heading">
             <span class="panel-title">MY RUNNING LIST</span>
             <div>
+              <button
+                class="icon-btn"
+                id="stravaBtn"
+                title="Strava Activity"
+                hidden
+              >
+                🏅
+              </button>
               <button class="icon-btn" id="statsBtn" title="Statistics">
                 📊
               </button>
@@ -127,7 +135,7 @@
               type="text"
               id="nameInput"
               class="field"
-              placeholder="@anonim"
+              placeholder="@anonymous"
               maxlength="40"
             />
             <label class="field-label" for="msgInput"
@@ -180,6 +188,19 @@
             window.
           </p>
           <div class="player-frame" id="playerFrame"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="stravaOverlay">
+      <div class="window modal-card">
+        <div class="titlebar">
+          <span>🏅 strava.exe</span
+          ><button class="x-btn" id="stravaClose" aria-label="Close">✕</button>
+        </div>
+        <div class="window-body">
+          <p class="modal-sub">Your latest Strava activity ✨</p>
+          <div class="strava-frame" id="stravaFrame"></div>
         </div>
       </div>
     </div>

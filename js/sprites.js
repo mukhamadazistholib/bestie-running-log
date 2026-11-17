@@ -1,4 +1,4 @@
-/* Pixel art sprites: setiap karakter = 1 pixel. "." = transparan */
+/* Pixel art sprites: each character represents one pixel. "." = transparent. */
 (function (g) {
   "use strict";
   const PAL = {

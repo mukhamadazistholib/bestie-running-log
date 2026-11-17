@@ -516,6 +516,19 @@ button {
   height: 352px;
   border: 0;
 }
+.strava-frame {
+  display: flex;
+  justify-content: center;
+  margin: 6px 4px 4px;
+  padding: 10px;
+  background: #fff;
+  box-shadow: var(--pixel-border);
+}
+.strava-frame iframe {
+  display: block;
+  border: 0;
+  max-width: 100%;
+}
 .px-btn {
   width: 100%;
   margin-top: 10px;
