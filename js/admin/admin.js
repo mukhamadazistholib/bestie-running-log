@@ -184,7 +184,7 @@
     $("adminList").hidden = false;
     $("adminList").innerHTML = events
       .map((ev, i) => {
-        const st = String(ev.status || "pending").toLowerCase();
+        const st = normalizeEventStatus(ev.status);
         const color = /^#[0-9a-f]{6}$/i.test(ev.color)
           ? ev.color
           : PASTELS[i % PASTELS.length];
@@ -229,9 +229,7 @@
       $("titleInput").value = ev.title || "";
       $("descInput").value = ev.description || "";
       $("timeInput").value = ev.time || "";
-      const s = String(ev.status).toLowerCase();
-      if (["pending", "active", "done", "canceled"].includes(s))
-        $("statusInput").value = s;
+      $("statusInput").value = normalizeEventStatus(ev.status);
     }
     open("eventModal", true);
   }

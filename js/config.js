@@ -19,6 +19,18 @@ const CONFIG = {
   BUBBLE_DURATION_S: 12,
 };
 
+function normalizeEventStatus(value) {
+  const status = String(value || "pending")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
+  if (["active", "in progress", "ongoing"].includes(status)) return "active";
+  if (["done", "true", "complete", "completed"].includes(status)) return "done";
+  if (["canceled", "cancelled"].includes(status)) return "canceled";
+  return "pending";
+}
+
 const _d = (n, h = 6, m = 30) => {
   const d = new Date(Date.now() + n * 864e5);
   d.setHours(h, m, 0, 0);

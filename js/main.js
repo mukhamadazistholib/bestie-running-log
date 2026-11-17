@@ -344,15 +344,11 @@
       .map((x) => x.ev);
   }
   function classify(ev) {
-    const s = String(ev.status || "pending").toLowerCase();
-    const isCanceled = s === "canceled" || s === "cancelled";
+    const s = normalizeEventStatus(ev.status);
+    const isCanceled = s === "canceled";
     const d = parseDate(ev);
-    const isDone =
-      !isCanceled && (s === "done" || s === "true" || (d && daysUntil(d) < 0));
-    const isActive =
-      !isDone &&
-      !isCanceled &&
-      ["active", "ongoing", "in_progress"].includes(s);
+    const isDone = !isCanceled && (s === "done" || (d && daysUntil(d) < 0));
+    const isActive = !isDone && !isCanceled && s === "active";
     return { isDone: Boolean(isDone), isActive, isCanceled };
   }
 
@@ -406,8 +402,7 @@
       .filter(
         ({ ev, d }) =>
           d &&
-          !classify(ev).isDone &&
-          !classify(ev).isCanceled &&
+          classify(ev).isActive &&
           daysUntil(d) >= 0,
       )
       .sort((a, b) => a.d - b.d)[0];
